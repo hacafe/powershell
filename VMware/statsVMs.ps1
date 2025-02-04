@@ -1,5 +1,5 @@
 #Connect to vCenter Server using credentials
-Connect-VIServer -Server @servidor
+Connect-VIServer -Server @@@servidor@@@
 
 # Get powered-on VMs
 $vms = Get-Vm
@@ -66,7 +66,6 @@ foreach ($vm in $vms) {
 
 # Export data to CSV
 $allVMs | Select VmName, CPU, RAM, DiskCapacity, CPUAvg, MemAvg, UsedSpace, FreeSpace, CPUMax, CPUMin, MemMax, MemMin, ProvisionedDisk, UsedDisk | Sort-Object -Property VmName | Export-Csv -Path "C:\Users\xxxxx\data_VMs.csv" -NoTypeInformation
-
 Write-Host "Data successfully exported to 'C:\Users\xxxxx\data_VMs.csv'"
 
-Disconnect-VIServer -Server @servidor -Confirm:$false
+Disconnect-VIServer -Server @@@servidor@@@ -Confirm:$false
