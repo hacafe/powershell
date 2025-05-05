@@ -1,29 +1,30 @@
-###Backup GPO
+### Backup GPO Function
 function BackupGPO {
-    # Captura la fecha actual y crea el directorio
-    $fecha = Get-Date -Format "ddMMMyyyy"
-    $directorio = "C:\BackupGPO\$fecha"
+    # Get current date and create backup directory path (format: "05May2025")
+    $date = Get-Date -Format "ddMMMyyyy"
+    $directory = "C:\BackupGPO\$date"
 
-    # Verifica si la carpeta ya existe, si no, la crea
-    if (-Not (Test-Path -Path $directorio)) {
-        New-Item -Path $directorio -ItemType Directory -Force
+    # Check if directory exists, create it if missing
+    if (-Not (Test-Path -Path $directory)) {
+        New-Item -Path $directory -ItemType Directory -Force
     }
 
-    # Ejecuta el comando Backup-GPO
-    Backup-GPO -All -Path $directorio
+    # Backup ALL Group Policy Objects to the created directory
+    Backup-GPO -All -Path $directory
 
-    # Define la fecha límite: tres meses antes de la fecha actual
-    $limiteFecha = (Get-Date).AddMonths(-3)
+    # Calculate cutoff date (3 months ago from today)
+    $oldBackup = (Get-Date).AddMonths(-3)
 
-    # Obtiene todos los directorios dentro de C:\BackupGPO que sean más viejos que la fecha límite
+    # Find all subfolders in C:\BackupGPO older than 3 months
     $backups = Get-ChildItem -Path "C:\BackupGPO" | Where-Object {
-        $_.PSIsContainer -and $_.CreationTime -lt $limiteFecha
+        $_.PSIsContainer -and $_.CreationTime -lt $oldBackup
     }
 
-    # Elimina cada directorio que cumple la condición
+    # Delete outdated backup folders (older than 3 months)
     foreach ($backup in $backups) {
         Remove-Item -Path $backup.FullName -Recurse -Force
     }
 }
-# Llama a la función
+
+# Execute the BackupGPO function
 BackupGPO
