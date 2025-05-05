@@ -1,11 +1,12 @@
 <#
-.SYNOPSIS
-    Remotely disables SMB1, SMB2, and Telnet on a list of computers.
+.FUNCTION
+    Remotely disables SMB1 and Telnet Server and enable SMB2, on a list of computers.
 
 .DESCRIPTION
     This script takes a list of computer names from a file and remotely executes commands to:
-    - Disable SMB1 and SMB2 server-side configurations.
+    - Disable SMB1 server-side configurations.
     - Disable the Telnet Server Windows feature.
+    - Enable SMB2 server-side configurations.
     - Set registry values to further disable SMB1 and SMB2.
 
 .PARAMETER ComputerListName
@@ -14,7 +15,7 @@
 
 .EXAMPLE
     # Run on computers listed in C:\path\to\machines.txt using your own credentials
-    Disable-RemoteFeatures -ComputerListName "C:\path\to\machines.txt"
+    .\disableSMB.ps1 -ComputerListName "C:\path\to\machines.txt"
 
 .INPUTS
     None.
@@ -25,11 +26,12 @@
 .NOTES
     - Requires PowerShell remoting to be enabled on the target computers (WinRM).
     - The script must be run as a user with sufficient privileges on the target computers.
-    -  Disabling SMB1 can have compatibility implications with older systems.  SMB2 disabling is unusual and may have broader impacts.
-    -  The script includes error handling to gracefully handle offline computers or access denied errors.
+    - Disabling SMB1 can have compatibility implications with older systems. SMB2 disabling is unusual and may have broader impacts.
+    - Optional enable SMB3 on modern operative systems
+    - The script includes error handling to gracefully handle offline computers or access denied errors.
 #>
 param(
-    [Parameter(Mandatory=$true)]  # Changed to mandatory
+    [Parameter(Mandatory=$true)]
     [string]$ComputerListName
 )
 
@@ -58,7 +60,6 @@ process
             Write-Warning "Skipping empty computer name."
             continue  # Go to the next computer in the loop.
         }
-
         Write-Verbose "Processing computer: $Computer"
 
         #  Define the commands to be executed remotely.
@@ -69,6 +70,7 @@ process
             # Disable SMB1 and enable SMB2 Server Configuration
             Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force
             Set-SmbServerConfiguration -EnableSMB2Protocol $true -Force
+            #Set-SmbServerConfiguration -EnableSMB3Protocol $true -Force
 
             # Disable SMB1 Client Feature (Optional, usually client only)
             Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart
@@ -79,9 +81,10 @@ process
             # Set Registry Values for SMB1 and SMB2 (more definitive)
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "SMB1" -Value 0 -Force
             Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "SMB2" -Value 1 -Force
+            #Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "SMB3" -Value 1 -Force
 
             # Write output to the console on the remote machine
-            Write-Host "SMB1, SMB2, and Telnet configuration applied on $($env:COMPUTERNAME)"
+            Write-Host "SMB1, SMB2 and Telnet configuration applied on $($env:COMPUTERNAME)"
         }  # End of ScriptBlock
 
         #  Execute the commands on the remote computer.
