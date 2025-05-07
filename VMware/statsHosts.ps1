@@ -24,8 +24,9 @@ if (-not (Get-Module -Name VMware.PowerCLI -ListAvailable)) {
 }
 
 # VCENTER CONNECTION
-$vCenterServer = "name_server"
-$reportFolder = "path"
+$vCenterServer = "server"
+$reportFolder = "C:\path\reports"
+$reportName = "hoststats_$(Get-Date -Format 'yyyyMM').csv"
 
 try {
     Write-Host "Connecting to vCenter server $vCenterServer..."
@@ -101,7 +102,7 @@ foreach ($vmHost in $hosts) {
 }
 
 # EXPORT RESULTS
-$csvPath = Join-Path -Path $reportFolder -ChildPath "hoststats_$monthName.csv"
+$csvPath = Join-Path -Path $reportFolder -ChildPath $reportName
 
 try {
     $allhosts | Sort-Object HostName | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8
