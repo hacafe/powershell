@@ -24,8 +24,8 @@ if (-not (Get-Module -Name VMware.PowerCLI -ListAvailable)) {
 }
 
 # CONFIGURATION
-$vCenterServer = "vcenter.medellin.gov.co"
-$reportFolder = "C:\Users\a71363375\Documents\reports"
+$vCenterServer = "nameServer"
+$reportFolder = "C:\Users\xxxxx\Documents\reports"
 $reportName = "vmstatsHCI_$(Get-Date -Format 'yyyyMM').csv"
 
 try {
