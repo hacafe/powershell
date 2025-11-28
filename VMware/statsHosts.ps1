@@ -24,7 +24,7 @@ if (-not (Get-Module -Name VMware.PowerCLI -ListAvailable)) {
 }
 
 # VCENTER CONNECTION
-$vCenterServer = "server"
+$vCenterServer = "serverName"
 $reportFolder = "C:\path\reports"
 $reportName = "hoststats_$(Get-Date -Format 'yyyyMM').csv"
 
