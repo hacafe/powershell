@@ -24,7 +24,7 @@ if (-not (Get-Module -Name VMware.PowerCLI -ListAvailable)) {
 }
 
 # CONFIGURATION
-$vCenterServer = "host"
+$vCenterServer = "nameServer"
 $reportFolder = "C:\path\reports"
 
 # Calculate reporting period (last month)
